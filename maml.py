@@ -137,6 +137,4 @@ def train():
             plot_id += 1
 
 
-def test():
-    print "Hello World"
 
