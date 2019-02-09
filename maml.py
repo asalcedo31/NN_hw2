@@ -128,6 +128,8 @@ def train():
     for i in range(OUTER_STEPS):
         ### YOUR CODE HERE
         loss = mod(params)
+        print(type(loss))
+        print(loss)
         new_params = gd_step(loss,params,INNER_LRATE)
         params = new_params
         ### END CODE
