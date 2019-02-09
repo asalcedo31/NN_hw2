@@ -1,6 +1,8 @@
 import autograd.numpy as np
 import autograd as ag
-# from matplotlib import pyplot as plt
+import copy as copy
+from autograd.misc import flatten
+from matplotlib import pyplot as plt
 
 
 def relu(z):
@@ -44,9 +46,20 @@ def gd_step(cost, params, lrate):
     the input parameters."""
     ### YOUR CODE HERE
     cost_grad_fun = ag.grad(cost)
-    new_w3 = params['w3'] - cost_grad_fun(params)['w3']*lrate
-    new_b3 = params['b3'] - cost_grad_fun(params)['b3']*lrate
-    return {'w3':new_w3, 'b3':new_b3}
+    new_params = copy.deepcopy(params)
+    opt_params = {}
+    for p in new_params.keys():
+        opt_params[p] = new_params[p] - cost_grad_fun(new_params)[p]*lrate
+    new_params = opt_params
+
+    # new_params, unflatten_func = flatten(new_params)
+    # grad_p =  cost_grad_fun(new_params)['w3']*lrate
+    # # new_params = new_params - cost_grad_fun(unflatten_func(new_params))*lrate
+    # print(new_params)
+    # die
+    # # new_params[p] = new_params[p] - cost_grad_fun(new_params)[p]*lrate
+    # new_b3 = params['b3'] - cost_grad_fun(params)['b3']*lrate
+    return new_params
     
     
     ### END CODE
@@ -76,13 +89,13 @@ class MetaObjective:
         trajectory = [params]
         
         ### YOUR CODE HERE
-        for i in range(self.inner_lrate):
+        inner_params = copy.deepcopy(params)
+        for i in range(self.num_steps):
             loss = InnerObjective(self.x, self.y)
-            new_params = gd_step(loss,params,INNER_LRATE)
-            params['w3'] = new_params['w3']
-            params['b3'] = new_params['b3']
-    
-        final = loss(new_params)    
+            new_params = gd_step(loss,inner_params,INNER_LRATE)
+            inner_params = new_params
+  
+        final_cost = loss(new_params)    
         ### END CODE
         
         if return_traj:
@@ -124,33 +137,31 @@ def train():
     np.random.seed(0)
     data_gen = ToyDataGen(XMIN, XMAX, YMIN, YMAX, NOISE, BINS)
     params = random_init(INIT_STD, NHID)
-    # fig, ax = plt.subplots(3, 4, figsize=(16, 9))
+    fig, ax = plt.subplots(3, 4, figsize=(16, 9))
     plot_id = 0
     
     x_val, y_val = data_gen.sample_dataset(NDATA)
     
 
     for i in range(OUTER_STEPS):
-        ### YOUR CODE HERE
+        ### YOUR CODE HERE      
         
-        
-        loss = mod
+        loss = MetaObjective(x_val,y_val, INNER_LRATE, INNER_STEPS)
         new_params = gd_step(loss,params,INNER_LRATE)
-        params['w3'] = new_params['w3']
-        params['b3'] = new_params['b3']
-
+        for p in params.keys():
+            params[p] = new_params[p]
         x_val, y_val = data_gen.sample_dataset(NDATA)
         ### END CODE
         
         if (i+1) % PRINT_EVERY == 0:
-            print(mod(params))
-            # val_cost = MetaObjective(x_val, y_val, INNER_LRATE, INNER_STEPS)
-            # print('Iteration %d Meta-objective: %1.3f' % (i+1, val_cost(params)))
+            # print(mod(params))
+            val_cost = MetaObjective(x_val, y_val, INNER_LRATE, INNER_STEPS)
+            print('Iteration %d Meta-objective: %1.3f' % (i+1, val_cost(params)))
         
-        #print('Outer cost:', cost(params))
-        # if (i+1) % DISPLAY_EVERY == 0:
-        #     cost.visualize(params, 'Iteration %d' % (i+1), ax.flat[plot_id])
-        #     plot_id += 1
+        # print('Outer cost:', val_cost(params))
+        if (i+1) % DISPLAY_EVERY == 0:
+            val_cost.visualize(params, 'Iteration %d' % (i+1), ax.flat[plot_id])
+            plot_id += 1
 
 
 
