@@ -142,11 +142,11 @@ def train():
 
     for i in range(OUTER_STEPS):
         ### YOUR CODE HERE        
+        x_val, y_val = data_gen.sample_dataset(NDATA)
         cost = MetaObjective(x_val,y_val, INNER_LRATE, INNER_STEPS)
         new_params = gd_step(cost,params,INNER_LRATE)
         for p in params.keys():
             params[p] = new_params[p]
-        x_val, y_val = data_gen.sample_dataset(NDATA)
         ### END CODE
         
         if (i+1) % PRINT_EVERY == 0:
