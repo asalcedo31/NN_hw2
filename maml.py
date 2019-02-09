@@ -76,8 +76,13 @@ class MetaObjective:
         trajectory = [params]
         
         ### YOUR CODE HERE
-
-        
+        for i in range(self.inner_lrate):
+            loss = InnerObjective(self.x, self.y)
+            new_params = gd_step(loss,params,INNER_LRATE)
+            params['w3'] = new_params['w3']
+            params['b3'] = new_params['b3']
+    
+        final = loss(new_params)    
         ### END CODE
         
         if return_traj:
@@ -123,14 +128,18 @@ def train():
     plot_id = 0
     
     x_val, y_val = data_gen.sample_dataset(NDATA)
-    mod = InnerObjective(x_val, y_val)
+    
 
     for i in range(OUTER_STEPS):
         ### YOUR CODE HERE
+        
+        
         loss = mod
         new_params = gd_step(loss,params,INNER_LRATE)
         params['w3'] = new_params['w3']
         params['b3'] = new_params['b3']
+
+        x_val, y_val = data_gen.sample_dataset(NDATA)
         ### END CODE
         
         if (i+1) % PRINT_EVERY == 0:
