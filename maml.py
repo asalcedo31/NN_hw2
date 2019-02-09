@@ -51,6 +51,7 @@ def gd_step(cost, params, lrate):
     for p in params.keys():
         opt_params[p] = params[p] - cost_grad_fun(params)[p]*lrate
     # new_params = opt_params
+    # print(opt_params['w3'])
     return opt_params
     
     
@@ -81,16 +82,18 @@ class MetaObjective:
         trajectory = [params]
         
         ### YOUR CODE HERE
-        inner_params = copy.deepcopy(params)
+        # inner_params = copy.deepcopy(params)
         # inner_params = {}
         for i in range(self.num_steps):
             loss = InnerObjective(self.x, self.y)
-            inner_params = gd_step(loss,inner_params,INNER_LRATE)
-            # inner_params = new_params
+            inner_params = gd_step(loss,params,INNER_LRATE)
+            params = inner_params
+            trajectory.append(params)
   
-        final_cost = loss(inner_params)    
+        final_cost = loss(params)    
         ### END CODE
-        
+        # print("in meta")
+        # print(params)
         if return_traj:
             return final_cost, trajectory
         else:
@@ -108,12 +111,13 @@ class MetaObjective:
 
 
 OUTER_LRATE = 0.01
-OUTER_STEPS = 12000
+# OUTER_STEPS = 12000
+OUTER_STEPS = 500
 INNER_LRATE = 0.1
 INNER_STEPS = 5
 
 PRINT_EVERY = 50
-DISPLAY_EVERY = 1000
+DISPLAY_EVERY = 100
 
 XMIN = -3
 XMAX = 3
@@ -138,8 +142,8 @@ def train():
 
     for i in range(OUTER_STEPS):
         ### YOUR CODE HERE        
-        loss = MetaObjective(x_val,y_val, INNER_LRATE, INNER_STEPS)
-        new_params = gd_step(loss,params,INNER_LRATE)
+        cost = MetaObjective(x_val,y_val, INNER_LRATE, INNER_STEPS)
+        new_params = gd_step(cost,params,INNER_LRATE)
         for p in params.keys():
             params[p] = new_params[p]
         x_val, y_val = data_gen.sample_dataset(NDATA)
@@ -152,7 +156,7 @@ def train():
         
         # print('Outer cost:', val_cost(params))
         if (i+1) % DISPLAY_EVERY == 0:
-            val_cost.visualize(params, 'Iteration %d' % (i+1), ax.flat[plot_id])
+            cost.visualize(params, 'Iteration %d' % (i+1), ax.flat[plot_id])
             plot_id += 1
 
 
