@@ -44,6 +44,8 @@ def gd_step(cost, params, lrate):
     the input parameters."""
     ### YOUR CODE HERE
     cost_grad_fun = ag.grad(cost)
+    print(cost_grad_fun)
+    print(type(cost_grad_fun))
     new_w3 = params['w3'] - cost_grad_fun(params)['w3']*lrate
     new_b3 = params['b3'] - cost_grad_fun(params)['b3']*lrate
     return {'w3':new_w3, 'b3':new_b3}
