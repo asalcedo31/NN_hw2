@@ -1,6 +1,6 @@
 import autograd.numpy as np
 import autograd as ag
-from matplotlib import pyplot as plt
+# from matplotlib import pyplot as plt
 
 
 def relu(z):
@@ -44,9 +44,9 @@ def gd_step(cost, params, lrate):
     the input parameters."""
     ### YOUR CODE HERE
     cost_grad_fun = ag.grad(cost)
-    print(cost_grad_fun)
-    new_params = params - cost_grad_fun(params)*lrate
-    return new_params
+    new_w3 = params['w3'] - cost_grad_fun(params)['w3']*lrate
+    new_b3 = params['b3'] - cost_grad_fun(params)['b3']*lrate
+    return {'w3':new_w3, 'b3':new_b3}
     
     
     ### END CODE
@@ -119,7 +119,7 @@ def train():
     np.random.seed(0)
     data_gen = ToyDataGen(XMIN, XMAX, YMIN, YMAX, NOISE, BINS)
     params = random_init(INIT_STD, NHID)
-    fig, ax = plt.subplots(3, 4, figsize=(16, 9))
+    # fig, ax = plt.subplots(3, 4, figsize=(16, 9))
     plot_id = 0
     
     x_val, y_val = data_gen.sample_dataset(NDATA)
@@ -127,23 +127,22 @@ def train():
 
     for i in range(OUTER_STEPS):
         ### YOUR CODE HERE
-        loss = mod(params)
-        print(type(loss))
-        print(loss)
+        loss = mod
         new_params = gd_step(loss,params,INNER_LRATE)
-        params = new_params
+        params['w3'] = new_params['w3']
+        params['b3'] = new_params['b3']
         ### END CODE
         
         if (i+1) % PRINT_EVERY == 0:
-            print(loss)
-            print(params)
+            print(mod(params))
             # val_cost = MetaObjective(x_val, y_val, INNER_LRATE, INNER_STEPS)
             # print('Iteration %d Meta-objective: %1.3f' % (i+1, val_cost(params)))
         
         #print('Outer cost:', cost(params))
-        if (i+1) % DISPLAY_EVERY == 0:
-            cost.visualize(params, 'Iteration %d' % (i+1), ax.flat[plot_id])
-            plot_id += 1
+        # if (i+1) % DISPLAY_EVERY == 0:
+        #     cost.visualize(params, 'Iteration %d' % (i+1), ax.flat[plot_id])
+        #     plot_id += 1
 
 
 
+# train()
