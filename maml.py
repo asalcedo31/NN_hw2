@@ -43,8 +43,10 @@ def gd_step(cost, params, lrate):
     rate lrate. Returns a new set of parameters, and (IMPORTANT) does not modify
     the input parameters."""
     ### YOUR CODE HERE
+    cost_grad_fun = grad(cost)
+    new_params = params - cost_grad_fun(params)*lrate
+    return new_params
     
-    pass
     
     ### END CODE
 
@@ -120,16 +122,20 @@ def train():
     plot_id = 0
     
     x_val, y_val = data_gen.sample_dataset(NDATA)
-    
+    mod = InnerObjective(x_val, y_val)
+
     for i in range(OUTER_STEPS):
         ### YOUR CODE HERE
-
-
+        loss = mod(params)
+        new_params = gd_step(loss,params,INNER_LRATE)
+        params = new_params
         ### END CODE
         
         if (i+1) % PRINT_EVERY == 0:
-            val_cost = MetaObjective(x_val, y_val, INNER_LRATE, INNER_STEPS)
-            print('Iteration %d Meta-objective: %1.3f' % (i+1, val_cost(params)))
+            print(loss)
+            print(params)
+            # val_cost = MetaObjective(x_val, y_val, INNER_LRATE, INNER_STEPS)
+            # print('Iteration %d Meta-objective: %1.3f' % (i+1, val_cost(params)))
         
         #print('Outer cost:', cost(params))
         if (i+1) % DISPLAY_EVERY == 0:
