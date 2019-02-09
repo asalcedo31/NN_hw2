@@ -43,11 +43,7 @@ def gd_step(cost, params, lrate):
     rate lrate. Returns a new set of parameters, and (IMPORTANT) does not modify
     the input parameters."""
     ### YOUR CODE HERE
-    print(type(cost))
     cost_grad_fun = ag.grad(cost)
-    # print(cost_grad_fun)
-    print(type(cost_grad_fun))
-    # return
     new_w3 = params['w3'] - cost_grad_fun(params)['w3']*lrate
     new_b3 = params['b3'] - cost_grad_fun(params)['b3']*lrate
     return {'w3':new_w3, 'b3':new_b3}
@@ -133,7 +129,6 @@ def train():
         ### YOUR CODE HERE
         loss = mod
         new_params = gd_step(loss,params,INNER_LRATE)
-        return
         params['w3'] = new_params['w3']
         params['b3'] = new_params['b3']
         ### END CODE
