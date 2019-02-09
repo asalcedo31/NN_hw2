@@ -44,6 +44,7 @@ def gd_step(cost, params, lrate):
     the input parameters."""
     ### YOUR CODE HERE
     cost_grad_fun = ag.grad(cost)
+    print(cost_grad_fun)
     new_params = params - cost_grad_fun(params)*lrate
     return new_params
     
