@@ -46,20 +46,12 @@ def gd_step(cost, params, lrate):
     the input parameters."""
     ### YOUR CODE HERE
     cost_grad_fun = ag.grad(cost)
-    new_params = copy.deepcopy(params)
+    # new_params = copy.deepcopy(params)
     opt_params = {}
-    for p in new_params.keys():
-        opt_params[p] = new_params[p] - cost_grad_fun(new_params)[p]*lrate
-    new_params = opt_params
-
-    # new_params, unflatten_func = flatten(new_params)
-    # grad_p =  cost_grad_fun(new_params)['w3']*lrate
-    # # new_params = new_params - cost_grad_fun(unflatten_func(new_params))*lrate
-    # print(new_params)
-    # die
-    # # new_params[p] = new_params[p] - cost_grad_fun(new_params)[p]*lrate
-    # new_b3 = params['b3'] - cost_grad_fun(params)['b3']*lrate
-    return new_params
+    for p in params.keys():
+        opt_params[p] = params[p] - cost_grad_fun(params)[p]*lrate
+    # new_params = opt_params
+    return opt_params
     
     
     ### END CODE
@@ -90,12 +82,13 @@ class MetaObjective:
         
         ### YOUR CODE HERE
         inner_params = copy.deepcopy(params)
+        # inner_params = {}
         for i in range(self.num_steps):
             loss = InnerObjective(self.x, self.y)
-            new_params = gd_step(loss,inner_params,INNER_LRATE)
-            inner_params = new_params
+            inner_params = gd_step(loss,inner_params,INNER_LRATE)
+            # inner_params = new_params
   
-        final_cost = loss(new_params)    
+        final_cost = loss(inner_params)    
         ### END CODE
         
         if return_traj:
@@ -119,7 +112,7 @@ OUTER_STEPS = 12000
 INNER_LRATE = 0.1
 INNER_STEPS = 5
 
-PRINT_EVERY = 10
+PRINT_EVERY = 50
 DISPLAY_EVERY = 1000
 
 XMIN = -3
@@ -144,8 +137,7 @@ def train():
     
 
     for i in range(OUTER_STEPS):
-        ### YOUR CODE HERE      
-        
+        ### YOUR CODE HERE        
         loss = MetaObjective(x_val,y_val, INNER_LRATE, INNER_STEPS)
         new_params = gd_step(loss,params,INNER_LRATE)
         for p in params.keys():
