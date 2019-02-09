@@ -43,6 +43,7 @@ def gd_step(cost, params, lrate):
     rate lrate. Returns a new set of parameters, and (IMPORTANT) does not modify
     the input parameters."""
     ### YOUR CODE HERE
+    print(type(cost))
     cost_grad_fun = ag.grad(cost)
     # print(cost_grad_fun)
     print(type(cost_grad_fun))
