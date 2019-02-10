@@ -92,8 +92,8 @@ class MetaObjective:
     
     def visualize(self, params, title, ax):
         _, trajectory = self(params, return_traj=True)
-        print(self.x,self.y)
-        ax.scatter(self.x, self.y, 'bx', ms=3.)
+        ax.scatter(self.x, self.y, c='b', marker='x')
+        # ax.plot(self.x, self.y, 'bx', ms=3.)
         px = np.linspace(XMIN, XMAX, 1000)
         for i, new_params in enumerate(trajectory):
             py = net_predict(new_params, px)
