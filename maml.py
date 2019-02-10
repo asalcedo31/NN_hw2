@@ -46,12 +46,9 @@ def gd_step(cost, params, lrate):
     the input parameters."""
     ### YOUR CODE HERE
     cost_grad_fun = ag.grad(cost)
-    # new_params = copy.deepcopy(params)
     opt_params = {}
     for p in params.keys():
         opt_params[p] = params[p] - cost_grad_fun(params)[p]*lrate
-    # new_params = opt_params
-    # print(opt_params['w3'])
     return opt_params
     
     
@@ -82,18 +79,12 @@ class MetaObjective:
         trajectory = [params]
         
         ### YOUR CODE HERE
-        # inner_params = copy.deepcopy(params)
-        # inner_params = {}
+        loss = InnerObjective(self.x, self.y)
         for i in range(self.num_steps):
-            loss = InnerObjective(self.x, self.y)
-            inner_params = gd_step(loss,params,INNER_LRATE)
-            params = inner_params
+            params = gd_step(loss,params,INNER_LRATE)
             trajectory.append(params)
   
         final_cost = loss(params)    
-        ### END CODE
-        # print("in meta")
-        # print(params)
         if return_traj:
             return final_cost, trajectory
         else:
@@ -112,12 +103,12 @@ class MetaObjective:
 
 OUTER_LRATE = 0.01
 OUTER_STEPS = 12000
-# OUTER_STEPS = 100
+# OUTER_STEPS = 2
 INNER_LRATE = 0.1
 INNER_STEPS = 5
 
-PRINT_EVERY = 1000
-DISPLAY_EVERY = 100
+PRINT_EVERY = 100
+DISPLAY_EVERY = 1000
 
 XMIN = -3
 XMAX = 3
@@ -139,14 +130,12 @@ def train():
     
     x_val, y_val = data_gen.sample_dataset(NDATA)
     
-
     for i in range(OUTER_STEPS):
         ### YOUR CODE HERE        
         x_val, y_val = data_gen.sample_dataset(NDATA)
-        cost = MetaObjective(x_val,y_val, INNER_LRATE, INNER_STEPS)
-        new_params = gd_step(cost,params,INNER_LRATE)
-        for p in params.keys():
-            params[p] = new_params[p]
+        cost = MetaObjective(x_val,y_val, INNER_LRATE, INNER_STEPS)    
+        
+        params = gd_step(cost,params,INNER_LRATE)
         ### END CODE
         
         if (i+1) % PRINT_EVERY == 0:
